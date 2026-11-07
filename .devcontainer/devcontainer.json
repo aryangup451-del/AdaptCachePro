@@ -1,0 +1,26 @@
+{
+  "name": "AdaptCache Pro Cloud Environment",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [8080, 8081, 8082, 9000],
+  "portsAttributes": {
+    "8081": {
+      "label": "AdaptCache Proxy Node A",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    },
+    "8080": {
+      "label": "AdaptCache Proxy Single",
+      "onAutoForward": "silent",
+      "visibility": "public"
+    },
+    "9000": {
+      "label": "AdaptCache Origin Server",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    }
+  },
+  "postCreateCommand": "chmod +x scripts/*.sh"
+}
