@@ -1,5 +1,8 @@
 # AdaptCache Pro
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aryangup451-del/AdaptCachePro)
+[![Build and Publish](https://github.com/aryangup451-del/AdaptCachePro/actions/workflows/deploy.yml/badge.svg)](https://github.com/aryangup451-del/AdaptCachePro/actions/workflows/deploy.yml)
+
 **An Intelligent Adaptive HTTP Cache &amp; Reverse Proxy for High-Concurrency
 Cloud Systems**
 
