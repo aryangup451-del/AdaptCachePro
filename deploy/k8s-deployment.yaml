@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adaptcache-proxy
+  labels:
+    app: adaptcache-proxy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: adaptcache-proxy
+  template:
+    metadata:
+      labels:
+        app: adaptcache-proxy
+    spec:
+      containers:
+        - name: proxy
+          image: adaptcache-pro:latest
+          imagePullPolicy: IfNotPresent
+          args: ["proxy"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PROXY_PORT
+              value: "8080"
+            - name: ORIGIN_BASE_URL
+              value: "http://adaptcache-origin:9000"
+            - name: SELF_TUNING_ENABLED
+              value: "true"
+            - name: EVICTION_POLICY
+              value: "cacs"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adaptcache-origin
+  labels:
+    app: adaptcache-origin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adaptcache-origin
+  template:
+    metadata:
+      labels:
+        app: adaptcache-origin
+    spec:
+      containers:
+        - name: origin
+          image: adaptcache-pro:latest
+          imagePullPolicy: IfNotPresent
+          args: ["origin"]
+          ports:
+            - containerPort: 9000
+          env:
+            - name: ORIGIN_PORT
+              value: "9000"

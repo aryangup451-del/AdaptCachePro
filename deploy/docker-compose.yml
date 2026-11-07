@@ -1,0 +1,47 @@
+services:
+  origin:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: ["java", "-cp", "out", "com.adaptivecache.Main", "origin"]
+    ports:
+      - "9000:9000"
+    environment:
+      ORIGIN_PORT: "9000"
+    networks: [adaptcache]
+
+  proxy-a:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: ["java", "-cp", "out", "com.adaptivecache.Main", "proxy"]
+    ports:
+      - "8081:8080"
+    environment:
+      PROXY_PORT: "8080"
+      ORIGIN_BASE_URL: "http://origin:9000"
+      NODE_ID: "node-a"
+      PEER_PROXIES: "http://proxy-b:8080"
+      SELF_TUNING_ENABLED: "true"
+    depends_on: [origin]
+    networks: [adaptcache]
+
+  proxy-b:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: ["java", "-cp", "out", "com.adaptivecache.Main", "proxy"]
+    ports:
+      - "8082:8080"
+    environment:
+      PROXY_PORT: "8080"
+      ORIGIN_BASE_URL: "http://origin:9000"
+      NODE_ID: "node-b"
+      PEER_PROXIES: "http://proxy-a:8080"
+      SELF_TUNING_ENABLED: "true"
+    depends_on: [origin]
+    networks: [adaptcache]
+
+networks:
+  adaptcache:
+    driver: bridge

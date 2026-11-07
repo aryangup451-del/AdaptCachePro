@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adaptcache-proxy
+  labels:
+    app: adaptcache-proxy
+spec:
+  type: LoadBalancer
+  selector:
+    app: adaptcache-proxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adaptcache-origin
+  labels:
+    app: adaptcache-origin
+spec:
+  clusterIP: None
+  selector:
+    app: adaptcache-origin
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: adaptcache-proxy
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: adaptcache-proxy
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
